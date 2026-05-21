@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.io.Serializable; // Import this!
 import java.math.BigDecimal;
 
 @Entity
@@ -11,7 +12,10 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class Product implements Serializable { // Add 'implements Serializable' here!
+
+    // This helps Java track the class version for serialization consistency
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,5 +33,5 @@ public class Product {
     private Integer stock;
 
     @Version
-    private Integer version; // Crucial for your Day 2 Optimistic Locking!
+    private Integer version;
 }
