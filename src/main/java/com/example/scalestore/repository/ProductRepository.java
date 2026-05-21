@@ -1,6 +1,6 @@
 package com.example.scalestore;
 
-import com.example.scalestore.Product;
+import com.example.scalestore.model.Product;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
