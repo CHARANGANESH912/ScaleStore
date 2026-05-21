@@ -3,38 +3,41 @@ package com.example.scalestore.controller;
 import com.example.scalestore.model.Product;
 import com.example.scalestore.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
+@CrossOrigin(origins = "*")
 public class ProductController {
 
-    private final ProductService productService;
-
     @Autowired
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+    private ProductService productService;
 
+    /**
+     * Public endpoint to fetch all items.
+     * GET /api/products
+     */
     @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
-    @GetMapping("/{id}")
-    public Product getProduct(@PathVariable Long id) {
-        return productService.getProductById(id);
-    }
+    /**
+     * Public high-concurrency endpoint to process purchases.
+     * POST /api/products/purchase/{id}
+     * Expects JSON Body: { "quantity": 1 }
+     */
+    @PostMapping("/purchase/{id}")
+    public ResponseEntity<String> purchaseProduct(
+            @PathVariable Long id,
+            @RequestBody Map<String, Integer> payload) {
 
-    @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.createProduct(product);
-    }
-
-    @PostMapping("/{id}/purchase")
-    public Product purchaseProduct(@PathVariable Long id, @RequestParam int quantity) {
-        return productService.purchaseProduct(id, quantity);
+        int quantity = payload.getOrDefault("quantity", 1);
+        productService.purchaseProduct(id, quantity);
+        return ResponseEntity.ok("Purchase successful! Stock updated cleanly.");
     }
 }
