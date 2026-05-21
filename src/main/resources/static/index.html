@@ -10,18 +10,14 @@
         button:hover { background: #0056b3; }
         input { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
         .title-container { display: flex; align-items: center; gap: 12px; color: #222; margin-bottom: 30px; }
+        .logo-badge { background: #007bff; color: white; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-family: monospace; font-size: 28px; }
     </style>
 </head>
 <body>
 
 <div class="title-container">
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4.5 16.5c-1.5 1.26-2.5 3.19-2.5 5.5s1 4.24 2.5 5.5"/>
-        <path d="M12 2C6.5 2 2 6.5 2 12c0 3.58 2 6.5 4.5 8l4.5-4 1-5 5-1 4-4.5c-1.5-2.5-4.42-4.5-8-4.5z"/>
-        <path d="M14.5 9.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-        <path d="M16 16c.5-1.5 2.5-2.5 4.5-2.5s4 1 4.5 2.5c0 .5-1.5 1.5-4.5 1.5s-4-1-4.5-1.5z"/>
-    </svg>
-    <h1 style="margin: 0;">ScaleStore Dashboard</h1>
+    <span class="logo-badge">SS</span>
+    <h1 style="margin: 0; font-size: 32px;">ScaleStore Dashboard</h1>
 </div>
 
 <div id="auth-section" class="card">
@@ -53,16 +49,16 @@
         if (response.ok) {
             let rawToken = await response.text();
 
-            // Handle token parsing safely if wrapped in quotes or nested inside JSON keys
+            // Clean up token formatting context if wrapped or mapped inside JSON properties
             try {
                 const parsed = JSON.parse(rawToken);
                 rawToken = parsed.token || rawToken;
             } catch (e) {
-                // Remove literal wrapping quotation marks if present from plain text response
+                // Strip literal quotation boundaries if sent back as raw plain text
                 rawToken = rawToken.replace(/^"|"$/g, '');
             }
 
-            // Standardize token with Bearer prefix for Spring Security filter parsing
+            // Bind Bearer token validation prefix securely for Spring Security JwtFilter parsing
             jwtToken = rawToken.startsWith('Bearer ') ? rawToken : `Bearer ${rawToken}`;
 
             document.getElementById('auth-status').innerText = "✅ Logged In!";
@@ -108,7 +104,7 @@
         });
         if (response.ok) {
             alert("Purchase Successful!");
-            loadProducts(); // Re-trigger GET mapping to refresh live inventory stock counters
+            loadProducts(); // Sync state across UI dynamically
         } else {
             alert("Purchase Failed!");
         }
