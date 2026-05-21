@@ -1,4 +1,4 @@
-package com.example.scalestore;
+package com.example.scalestore.repository;
 
 import com.example.scalestore.model.Product;
 import jakarta.persistence.LockModeType;

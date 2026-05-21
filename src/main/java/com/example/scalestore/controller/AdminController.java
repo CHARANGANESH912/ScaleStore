@@ -1,4 +1,4 @@
-package com.example.scalestore;
+package com.example.scalestore.controller;
 
 import com.example.scalestore.model.Product;
 import com.example.scalestore.service.ProductService;
@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin")
 public class AdminController {
 
+    private final ProductService productService;
+
     @Autowired
-    private ProductService productService;
+    public AdminController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping
-    public String showAdminDashboard(Model model) {
+    public String adminDashboard(Model model) {
         model.addAttribute("products", productService.getAllProducts());
         return "admin";
     }
@@ -23,19 +27,13 @@ public class AdminController {
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("product", new Product());
-        return "add_product";
-    }
-
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        Product product = productService.getProductById(id);
-        model.addAttribute("product", product);
-        return "add_product";
+        return "add-product";
     }
 
     @PostMapping("/add")
     public String saveProduct(@ModelAttribute("product") Product product) {
-        productService.saveProduct(product);
+        // Fixed: Changed from saveProduct() to createProduct() to match your service layer
+        productService.createProduct(product);
         return "redirect:/admin";
     }
 

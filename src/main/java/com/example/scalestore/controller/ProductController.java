@@ -1,26 +1,40 @@
-package com.example.scalestore;
+package com.example.scalestore.controller;
 
 import com.example.scalestore.model.Product;
+import com.example.scalestore.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/products")
 public class ProductController {
 
+    private final ProductService productService;
+
     @Autowired
-    private ProductService productService;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
-    @GetMapping("/product/{id}")
-    public String getProductDetails(@PathVariable("id") Long id, Model model) {
-        // Fetch product from DB
-        Product product = productService.getProductById(id);
+    @GetMapping
+    public List<Product> getAllProducts() {
+        return productService.getAllProducts();
+    }
 
-        // Pass data to HTML
-        model.addAttribute("product", product);
+    @GetMapping("/{id}")
+    public Product getProduct(@PathVariable Long id) {
+        return productService.getProductById(id);
+    }
 
-        return "product_details";
+    @PostMapping
+    public Product createProduct(@RequestBody Product product) {
+        return productService.createProduct(product);
+    }
+
+    @PostMapping("/{id}/purchase")
+    public Product purchaseProduct(@PathVariable Long id, @RequestParam int quantity) {
+        return productService.purchaseProduct(id, quantity);
     }
 }
