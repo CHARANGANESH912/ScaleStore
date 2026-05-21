@@ -65,7 +65,7 @@
                     <h3>${p.name}</h3>
                     <p>${p.description}</p>
                     <p><strong>Price: $${p.price}</strong></p>
-                    <p>Stock: ${p.stockQuantity}</p>
+                    <p>Stock: ${p.stock}</p>
                     <button onclick="purchase(${p.id})">Buy Now</button>
                 </div>
             `;
@@ -79,7 +79,7 @@
         });
         if (response.ok) {
             alert("Purchase Successful!");
-            loadProducts(); // Refresh stock
+            loadProducts(); // Refresh stock variables dynamically
         } else {
             alert("Purchase Failed!");
         }
