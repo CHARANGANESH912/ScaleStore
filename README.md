@@ -1,4 +1,3 @@
-```markdown
 # 🚀 ScaleStore — High-Concurrency E-Commerce Backend
 
 ![Java](https://img.shields.io/badge/Java-17-orange)
@@ -25,7 +24,8 @@ Designed to simulate real-world high-traffic e-commerce systems with secure auth
 - RESTful API Architecture
 - PostgreSQL Persistence
 - Secure Password Encryption using BCrypt
-- Automated CI/CD Build Pipeline Verification
+- Automated CI/CD Build Verification using GitHub Actions
+- Interactive API Documentation using Swagger/OpenAPI
 
 ---
 
@@ -40,14 +40,14 @@ Designed to simulate real-world high-traffic e-commerce systems with secure auth
 - Springdoc OpenAPI / Swagger UI
 
 ### Database & Caching
-- PostgreSQL (Production on Render)
-- H2 Embedded Database (Isolated Local Profile Environment)
+- PostgreSQL (Production Database)
+- H2 Embedded Database (Development Environment)
 - Redis Cloud (Upstash Redis)
 
 ### DevOps & Deployment
 - Docker
 - Render Cloud Platform
-- GitHub Actions (Automated CI Run Runner)
+- GitHub Actions
 - Maven
 
 ### Frontend
@@ -57,54 +57,51 @@ Designed to simulate real-world high-traffic e-commerce systems with secure auth
 
 ---
 
-## ⚡ System Architecture & Visual Proof
+## ⚡ System Architecture
 
-### 📊 Automated System Data Flows
 ```mermaid
 graph TD
-    %% Styling Configuration
-    classDef client fill:#3498db,stroke:#2980b9,stroke-width:2px,color:#fff;
-    classDef security fill:#e74c3c,stroke:#c0392b,stroke-width:2px,color:#fff;
-    classDef framework fill:#2ecc71,stroke:#27ae60,stroke-width:2px,color:#fff;
-    classDef storage fill:#f39c12,stroke:#d35400,stroke-width:2px,color:#fff;
 
-    %% Architectural Components
-    Client[🖥️ Client Interface<br>HTML5 / Vanilla JS / CSS3]:::client
-    Security[🔒 Spring Security Layer<br>Stateless Authorization Filter]:::security
-    Swagger[📦 Swagger / OpenAPI UI<br>Interactive Live Playground]:::framework
-    Controller[🎮 REST Controller Layer<br>API Route Endpoints]:::framework
-    Service[⚙️ Spring Boot Service Layer<br>High-Concurrency Logic Engine]:::framework
-    Redis[(⚡ Upstash Redis Cache<br>Cache-Aside Performance Layer)]:::storage
-    Postgres[(🐘 PostgreSQL Database<br>Primary Persistent Storage)]:::storage
+    Client[🖥️ Client Interface]
+    Security[🔒 Spring Security Layer]
+    Swagger[📘 Swagger UI]
+    Controller[🎮 REST Controllers]
+    Service[⚙️ Service Layer]
+    Redis[(⚡ Redis Cache)]
+    Postgres[(🐘 PostgreSQL)]
 
-    %% Traffic Navigation Flows
-    Client -->|1. Stateless API Requests| Security
-    Security -->|PermitAll Path Routing| Swagger
-    Security -->|Route Protected Traffic| Controller
+    Client --> Security
+    Security --> Swagger
+    Security --> Controller
     Controller --> Service
-    
-    %% Cache-Aside Validation Loops
-    Service -->|2. High-Speed Read Check| Redis
-    Redis -.->|Cache Miss / Fallback| Service
-    Service -->|3. Read/Write Persistent Fallback| Postgres
-    Service -->|4. Hydrate Hot Memory Keys| Redis
 
+    Service --> Redis
+    Redis -. Cache Miss .-> Service
+
+    Service --> Postgres
+    Service --> Redis
 ```
 
-### 🖼️ Operational Dashboards
+---
 
-#### 🌐 Interactive Endpoint API Playground (Swagger UI)
+## 🖼️ Application Preview
 
-#### 🛒 Frontend ScaleStore Product Shelf Dashboard
+### 🌐 Swagger/OpenAPI Documentation UI
+
+Interactive API testing and endpoint documentation available through Swagger UI.
+
+### 🛒 ScaleStore Dashboard
+
+Responsive frontend dashboard integrated with backend REST APIs.
 
 ---
 
 ## 🔐 Authentication Flow
 
-* JWT token generated after successful login
-* Custom `JwtFilter` validates every protected request
-* Stateless session management
-* Secure password encryption using BCrypt
+- JWT token generated after successful login
+- Custom `JwtFilter` validates protected requests
+- Stateless session management
+- BCrypt password encryption
 
 ---
 
@@ -112,15 +109,15 @@ graph TD
 
 Integrated Redis distributed caching using:
 
-* `@Cacheable`
-* `@CacheEvict`
+- `@Cacheable`
+- `@CacheEvict`
 
 ### Benefits
 
-* Reduced repeated database reads
-* Faster product catalog responses
-* Improved scalability under heavy traffic
-* Lower backend response latency
+- Reduced repeated database reads
+- Faster product catalog responses
+- Improved scalability under heavy traffic
+- Lower backend response latency
 
 ---
 
@@ -128,15 +125,14 @@ Integrated Redis distributed caching using:
 
 Implemented pessimistic locking to prevent:
 
-* Race conditions
-* Duplicate purchases
-* Overselling inventory
+- Race conditions
+- Duplicate purchases
+- Overselling inventory
 
 Uses:
 
 ```java
 @Lock(LockModeType.PESSIMISTIC_WRITE)
-
 ```
 
 This ensures transactional consistency during concurrent checkout operations.
@@ -147,23 +143,33 @@ This ensures transactional consistency during concurrent checkout operations.
 
 Deployed on Render with:
 
-* Environment variable management
-* PostgreSQL integration
-* Production monitoring
-* Cloud-hosted backend services
-* Dockerized deployment consistency
+- Environment variable management
+- PostgreSQL integration
+- Production monitoring
+- Cloud-hosted backend services
+- Dockerized deployment consistency
+
+---
+
+## 📘 API Documentation
+
+Swagger UI available at:
+
+```txt
+http://localhost:8080/swagger-ui/index.html
+```
 
 ---
 
 ## 📡 API Endpoints
 
 | Method | Endpoint | Description |
-| --- | --- | --- |
+|--------|----------|-------------|
 | POST | `/api/auth/signup` | Register User |
 | POST | `/api/auth/login` | Generate JWT |
 | GET | `/api/products` | Fetch Products |
-| GET | `/swagger-ui/index.html` | Interactive Documentation API Interface |
 | POST | `/api/products/{id}/purchase` | Purchase Product |
+| GET | `/swagger-ui/index.html` | Swagger UI Documentation |
 
 ---
 
@@ -171,7 +177,6 @@ Deployed on Render with:
 
 ```bash
 docker-compose up --build
-
 ```
 
 ---
@@ -182,26 +187,24 @@ docker-compose up --build
 git clone <your-repository-url>
 cd ScaleStore
 mvn spring-boot:run
-
 ```
 
 ---
 
 ## 📈 Future Improvements
 
-* API Rate Limiting
-* Kafka Event Streaming
-* Integration Testing Framework Implementation
-* Monitoring & Logging Metrics Dashboards (Prometheus/Grafana)
+- API Rate Limiting
+- Kafka Event Streaming
+- CI/CD Pipeline Enhancements
+- Monitoring & Logging using Prometheus/Grafana
+- Unit Testing & Integration Testing
+- Microservices Architecture Migration
 
 ---
 
 ## 👨‍💻 Author
 
-**Kalevaru Charan Ganesh** Backend-focused Java Developer
+**Kalevaru Charan Ganesh**  
+Backend-focused Java Developer
 
 B.Tech CSE — B. V. Raju Institute of Technology, Narsapur
-
-```
-
-```
