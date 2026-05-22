@@ -41,10 +41,4 @@ public class ProductController {
         ));
     }
 
-    // 3. DELETE Request: Temporary Database Administrative Script to remove duplicate rows 4 and 5
-    @DeleteMapping("/api/products/cleanup-duplicates")
-    public ResponseEntity<String> cleanupDuplicates() {
-        productService.removeDuplicateProducts();
-        return ResponseEntity.ok("Duplicate items ID 4 and 5 successfully wiped out from PostgreSQL database!");
-    }
 }

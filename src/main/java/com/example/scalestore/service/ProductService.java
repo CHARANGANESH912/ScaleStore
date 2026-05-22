@@ -5,7 +5,6 @@ import com.example.scalestore.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +24,7 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
-    // 3. Create or Save a product (Wiped out earlier, now fully restored for AdminController)
+    // 3. Create or Save a product (Maintained for AdminController product seeding/management)
     @Transactional
     public Product createProduct(Product product) {
         return productRepository.save(product);
@@ -35,7 +34,7 @@ public class ProductService {
     @Transactional
     public void purchaseProduct(Long id, int quantity) {
         // Fetches product record and acquires row-level write lock
-        Product product = productRepository.findById(id) // or findByIdWithLock if declared in your repo
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         // Evaluate remaining inventory parameters safely inside lock block
@@ -46,16 +45,5 @@ public class ProductService {
         // Apply inventory update operation parameters
         product.setStock(product.getStock() - quantity);
         productRepository.save(product);
-    }
-
-    // 5. Database Cleanup Script to safely eliminate duplicate records ID 4 and 5
-    @Transactional
-    public void removeDuplicateProducts() {
-        if (productRepository.existsById(4L)) {
-            productRepository.deleteById(4L);
-        }
-        if (productRepository.existsById(5L)) {
-            productRepository.deleteById(5L);
-        }
     }
 }
