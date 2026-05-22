@@ -14,9 +14,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> mockLogin(@RequestBody Map<String, String> credentials) {
-        // Create a professional JSON response body
         Map<String, String> response = new HashMap<>();
-        response.add("token", "mock-jwt-token-string-xyz123");
+        // Fixed: Using .put() to assign the key-value pair correctly in Java Maps
+        response.put("token", "mock-jwt-token-string-xyz123");
 
         return ResponseEntity.ok(response);
     }
