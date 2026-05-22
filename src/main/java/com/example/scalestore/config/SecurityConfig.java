@@ -15,15 +15,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Disable CSRF protection for stateless API interactions
                 .csrf(csrf -> csrf.disable())
-
-                // 2. Grant unconditional public access to EVERY route (Kill 401 challenges)
+                .cors(cors -> cors.disable()) // Prevent any browser CORS blocks
                 .authorizeHttpRequests(auth -> auth
+                        // Permits everything completely to bypass token verification overhead
                         .anyRequest().permitAll()
                 );
-
-        // NOTE: .httpBasic() is completely removed here to permanently kill the browser popup challenge.
 
         return http.build();
     }
