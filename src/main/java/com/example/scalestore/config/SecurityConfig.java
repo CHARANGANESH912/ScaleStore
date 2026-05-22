@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -13,21 +15,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Disable CSRF since we are using tokens/Basic Auth for stateless API calls
+                // 1. Disable CSRF since we use token-based authentication schemas
                 .csrf(csrf -> csrf.disable())
 
-                // 2. Configure endpoint permissions
+                // 2. Configure endpoint asset pass-through mapping parameters
                 .authorizeHttpRequests(auth -> auth
-                        // Allow anyone to load the frontend website files completely free
+                        // Explicitly allow public users to view the static UI dashboard files
                         .requestMatchers("/", "/index.html", "/static/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll() // Ensure login api requests pass through
 
-                        // Keep all your core API endpoints secured
+                        // Secure all other functional service resources
                         .anyRequest().authenticated()
                 )
 
-                // 3. Keep your standard login enforcement active
+                // 3. Enable basic authentication mapping protocols
                 .httpBasic(org.springframework.security.config.Customizer.withDefaults());
 
         return http.build();
+    }
+
+    // 4. Cryptographic Password Encoder Bean (Restored to fix AuthService crash)
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
