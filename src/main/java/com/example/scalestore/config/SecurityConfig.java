@@ -18,6 +18,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable()) // Eliminates any potential browser CORS blocks
                 .authorizeHttpRequests(auth -> auth
+                        // FIXED: Explicitly permit all Swagger UI and OpenAPI documentation paths
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         // Force fully open public routing to allow stateless frontend fetches
                         .anyRequest().permitAll()
                 );
