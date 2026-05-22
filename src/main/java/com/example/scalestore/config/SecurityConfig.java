@@ -16,9 +16,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.disable()) // Prevent any browser CORS blocks
+                .cors(cors -> cors.disable()) // Eliminates any potential browser CORS blocks
                 .authorizeHttpRequests(auth -> auth
-                        // Permits everything completely to bypass token verification overhead
+                        // Force fully open public routing to allow stateless frontend fetches
                         .anyRequest().permitAll()
                 );
 

@@ -22,7 +22,7 @@
 
 <div id="auth-section" class="card">
     <h3>Login</h3>
-    <input type="text" id="email" placeholder="Email (student@bvrit.edu.in)">
+    <input type="text" id="email" placeholder="Email (test@example.com)">
     <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Login & Get Token</button>
     <p id="auth-status"></p>
@@ -34,8 +34,6 @@
 </div>
 
 <script>
-    let jwtToken = "";
-
     async function login() {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -47,20 +45,6 @@
         });
 
         if (response.ok) {
-            let rawToken = await response.text();
-
-            // Clean up token formatting context if wrapped or mapped inside JSON properties
-            try {
-                const parsed = JSON.parse(rawToken);
-                rawToken = parsed.token || rawToken;
-            } catch (e) {
-                // Strip literal quotation boundaries if sent back as raw plain text
-                rawToken = rawToken.replace(/^"|"$/g, '');
-            }
-
-            // Bind Bearer token validation prefix securely for Spring Security JwtFilter parsing
-            jwtToken = rawToken.startsWith('Bearer ') ? rawToken : `Bearer ${rawToken}`;
-
             document.getElementById('auth-status').innerText = "✅ Logged In!";
             document.getElementById('auth-section').style.display = "none";
             document.getElementById('store-section').style.display = "block";
@@ -71,9 +55,8 @@
     }
 
     async function loadProducts() {
-        const response = await fetch('/api/products', {
-            headers: { 'Authorization': jwtToken }
-        });
+        // Clean request parameters to match our fully open Security Config paths
+        const response = await fetch('/api/products');
 
         if (response.ok) {
             const products = await response.json();
@@ -93,18 +76,18 @@
             });
         } else {
             console.error("Failed to load products, status: " + response.status);
-            alert("Failed to load products! Check browser logs for security parameter mismatches.");
+            alert("Failed to load products!");
         }
     }
 
     async function purchase(id) {
+        // Clean purchase execution matching your query-param backend setup
         const response = await fetch(`/api/products/${id}/purchase?quantity=1`, {
-            method: 'POST',
-            headers: { 'Authorization': jwtToken }
+            method: 'POST'
         });
         if (response.ok) {
             alert("Purchase Successful!");
-            loadProducts(); // Sync state across UI dynamically
+            loadProducts(); // Automatically updates stock dynamically across the grid
         } else {
             alert("Purchase Failed!");
         }
