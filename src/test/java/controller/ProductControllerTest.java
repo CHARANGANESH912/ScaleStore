@@ -1,12 +1,14 @@
 package com.example.scalestore.controller;
 
-import com.example.scalestore.ScaleStoreApplication;
+import com.example.scalestore.security.CustomUserDetailsService;
+import com.example.scalestore.security.JwtFilter;
+import com.example.scalestore.security.JwtUtils;
 import com.example.scalestore.model.Product;
 import com.example.scalestore.service.ProductService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,7 +20,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(classes = ScaleStoreApplication.class)
+@WebMvcTest(ProductController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class ProductControllerTest {
 
@@ -27,6 +29,15 @@ class ProductControllerTest {
 
     @MockBean
     private ProductService productService;
+
+    @MockBean
+    private JwtFilter jwtFilter;
+
+    @MockBean
+    private JwtUtils jwtUtils;
+
+    @MockBean
+    private CustomUserDetailsService customUserDetailsService;
 
     @Test
     void shouldReturnProducts() throws Exception {
