@@ -2,40 +2,34 @@ package com.example.scalestore.controller;
 
 import com.example.scalestore.model.Product;
 import com.example.scalestore.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Map;
 
 @RestController
+@RequestMapping("/api/products")
+@RequiredArgsConstructor
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
-    // 1. GET Request: Public Catalog Browsing
-    @GetMapping("/api/products")
+    @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
+
+        return ResponseEntity.ok(
+                productService.getAllProducts()
+        );
     }
 
-    // 2. POST Request: Query-parameter based purchase matching index.html
-    @PostMapping("/api/products/{id}/purchase")
-    public ResponseEntity<Map<String, String>> purchaseProduct(
-            @PathVariable Long id,
-            @RequestParam(defaultValue = "1") int quantity) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProductById(
+            @PathVariable Long id) {
 
-        productService.purchaseProduct(id, quantity);
-
-        return ResponseEntity.ok(Map.of(
-                "status", "SUCCESS",
-                "message", "Purchase order processed successfully!"
-        ));
+        return ResponseEntity.ok(
+                productService.getProductById(id)
+        );
     }
+
 }

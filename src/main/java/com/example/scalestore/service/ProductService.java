@@ -1,49 +1,73 @@
 package com.example.scalestore.service;
 
+import com.example.scalestore.exception.DuplicateResourceException;
+import com.example.scalestore.exception.ResourceNotFoundException;
 import com.example.scalestore.model.Product;
 import com.example.scalestore.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    // 1. Fetch all products (Used for the public catalog GET request)
+    @Cacheable("products")
     public List<Product> getAllProducts() {
+
+        System.out.println("Fetching products from DATABASE...");
+
         return productRepository.findAll();
     }
 
-    // 2. Fetch single product by ID
-    public Optional<Product> getProductById(Long id) {
-        return productRepository.findById(id);
+    @Cacheable(value = "product", key = "#id")
+    public Product getProductById(Long id) {
+
+        System.out.println("Fetching product " + id + " from DATABASE...");
+
+        return productRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Product not found"));
     }
 
-    // 3. Create or Save a product (Maintained for AdminController product seeding/management)
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public Product createProduct(Product product) {
+
+        if (productRepository.existsByNameIgnoreCase(product.getName())) {
+            throw new DuplicateResourceException(
+                    "Product with name '" + product.getName() + "' already exists"
+            );
+        }
+
         return productRepository.save(product);
     }
 
-    // 4. Secure Purchase Method with Pessimistic Write Locking to protect flash sales
     @Transactional
-    public void purchaseProduct(Long id, int quantity) {
-        // Fetches product record and acquires row-level write lock
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+    @CacheEvict(value = {"products", "product"}, allEntries = true)
+    public Product updateProduct(Product product) {
 
-        // Evaluate remaining inventory parameters safely inside lock block
-        if (product.getStock() < quantity) {
-            throw new RuntimeException("Insufficient stock available for product: " + product.getName());
+        if (!productRepository.existsById(product.getId())) {
+            throw new ResourceNotFoundException("Product not found");
         }
 
-        // Apply inventory update operation parameters
-        product.setStock(product.getStock() - quantity);
-        productRepository.save(product);
+        return productRepository.save(product);
+    }
+
+    @Transactional
+    @CacheEvict(value = {"products", "product"}, allEntries = true)
+    public void deleteProduct(Long id) {
+
+        if (!productRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Product not found");
+        }
+
+        productRepository.deleteById(id);
     }
 }

@@ -1,0 +1,51 @@
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: scalestore-postgres
+
+    environment:
+      POSTGRES_DB: scalestore
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: scalestore-redis
+
+    ports:
+      - "6379:6379"
+
+    command: redis-server --appendonly yes
+
+    volumes:
+      - redis_data:/data
+
+  app:
+    build: .
+    container_name: scalestore-app
+
+    depends_on:
+      - postgres
+      - redis
+
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/scalestore
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,32 +1,33 @@
 package com.example.scalestore.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.io.Serializable; // Import this!
+import lombok.*;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "products")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product implements Serializable { // Add 'implements Serializable' here!
+@Builder
+public class Product implements Serializable {
 
-    // This helps Java track the class version for serialization consistency
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 150)
     private String name;
 
+    @Column(length = 1000)
     private String description;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
     @Column(nullable = false)
