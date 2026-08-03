@@ -1,210 +1,319 @@
 # 🚀 ScaleStore — High-Concurrency E-Commerce Backend
 
 ![Java](https://img.shields.io/badge/Java-17-orange)
-![Spring Boot](https://img.shields.io/badge/SpringBoot-3-green)
+![Spring Boot](https://img.shields.io/badge/SpringBoot-3.2-green)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue)
 ![Redis](https://img.shields.io/badge/Redis-Caching-red)
 ![Docker](https://img.shields.io/badge/Docker-Containerization-blue)
-![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-darkgreen)
+![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-brightgreen)
 
-Professional-grade scalable backend system built using Spring Boot 3, PostgreSQL, Redis, Docker, and Spring Security 6.
-
-Designed to simulate real-world high-traffic e-commerce systems with secure authentication, distributed caching, and concurrency-safe transactional workflows.
+A production-ready Spring Boot backend for an e-commerce platform demonstrating secure authentication, role-based authorization, distributed caching, concurrency-safe order processing, containerization, automated testing, and CI/CD.
 
 ---
 
-## 🔥 Core Features
+# 📌 Features
 
-- Stateless JWT Authentication
-- Role-Based Authorization
-- Redis Distributed Caching
-- Concurrency-Safe Checkout System
-- Global Exception Handling
-- Dockerized Deployment
-- RESTful API Architecture
-- PostgreSQL Persistence
-- Secure Password Encryption using BCrypt
-- Automated CI/CD Build Verification using GitHub Actions
-- Interactive API Documentation using Swagger/OpenAPI
+- 🔐 JWT Authentication
+- 👥 Role-Based Authorization (Admin / Customer)
+- 📦 Product Management
+- 🛒 Order Management
+- ⚡ Redis Distributed Caching
+- 🔄 Concurrency-Safe Inventory Updates
+- 🐘 PostgreSQL Database
+- 🛡️ Global Exception Handling
+- 📑 Swagger/OpenAPI Documentation
+- 🐳 Docker & Docker Compose Support
+- 🧪 Unit Testing with JUnit & Mockito
+- 🌐 Controller Testing with MockMvc
+- ✅ GitHub Actions CI/CD Pipeline
 
 ---
 
-## 🛠️ Tech Stack
+# 🛠️ Tech Stack
 
-### Backend
+## Backend
 - Java 17
 - Spring Boot 3
 - Spring Security 6
 - Spring Data JPA
 - Hibernate ORM
-- Springdoc OpenAPI / Swagger UI
+- Spring Validation
+- Spring Cache
+- Springdoc OpenAPI (Swagger)
 
-### Database & Caching
-- PostgreSQL (Production Database)
-- H2 Embedded Database (Development Environment)
-- Redis Cloud (Upstash Redis)
+## Database
+- PostgreSQL
+- H2 Database (Development)
 
-### DevOps & Deployment
+## Caching
+- Redis
+
+## Testing
+- JUnit 5
+- Mockito
+- MockMvc
+
+## DevOps
 - Docker
-- Render Cloud Platform
+- Docker Compose
 - GitHub Actions
 - Maven
 
-### Frontend
-- HTML5
-- CSS3
-- Vanilla JavaScript
-
 ---
 
-## ⚡ System Architecture
+# 🏗️ Architecture
 
-```mermaid
-graph TD
-
-    Client[🖥️ Client Interface]
-    Security[🔒 Spring Security Layer]
-    Swagger[📘 Swagger UI]
-    Controller[🎮 REST Controllers]
-    Service[⚙️ Service Layer]
-    Redis[(⚡ Redis Cache)]
-    Postgres[(🐘 PostgreSQL)]
-
-    Client --> Security
-    Security --> Swagger
-    Security --> Controller
-    Controller --> Service
-
-    Service --> Redis
-    Redis -. Cache Miss .-> Service
-
-    Service --> Postgres
-    Service --> Redis
+```text
+                Client
+                   │
+                   ▼
+        Spring Security (JWT)
+                   │
+                   ▼
+           REST Controllers
+                   │
+                   ▼
+             Service Layer
+            │             │
+            ▼             ▼
+      Redis Cache    PostgreSQL
 ```
 
----
+The application follows a layered architecture:
 
-## 🖼️ Application Preview
-
-### 🌐 Swagger/OpenAPI Documentation UI
-
-Interactive API testing and endpoint documentation available through Swagger UI.
-
-### 🛒 ScaleStore Dashboard
-
-Responsive frontend dashboard integrated with backend REST APIs.
+- Controller Layer
+- Service Layer
+- Repository Layer
+- Database Layer
 
 ---
 
-## 🔐 Authentication Flow
+# 🔐 Authentication
 
-- JWT token generated after successful login
-- Custom `JwtFilter` validates protected requests
-- Stateless session management
-- BCrypt password encryption
+Authentication is implemented using JWT tokens.
+
+Workflow:
+
+1. Register a new user
+2. Login using email & password
+3. Receive JWT token
+4. Authorize using:
+
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+5. Access protected endpoints
+
+Passwords are encrypted using BCrypt.
 
 ---
 
-## ⚡ Redis Distributed Caching
+# ⚡ Redis Caching
 
-Integrated Redis distributed caching using:
+Redis is used to improve application performance.
+
+Implemented using:
 
 - `@Cacheable`
 - `@CacheEvict`
 
-### Benefits
+Benefits:
 
-- Reduced repeated database reads
-- Faster product catalog responses
-- Improved scalability under heavy traffic
-- Lower backend response latency
+- Faster product retrieval
+- Reduced database load
+- Improved response time
 
 ---
 
-## 🔄 Concurrency Control
+# 🔄 Concurrency Control
 
-Implemented pessimistic locking to prevent:
+To prevent overselling during simultaneous purchases, the application uses database locking.
 
-- Race conditions
-- Duplicate purchases
-- Overselling inventory
-
-Uses:
+Implemented using:
 
 ```java
 @Lock(LockModeType.PESSIMISTIC_WRITE)
 ```
 
-This ensures transactional consistency during concurrent checkout operations.
+This ensures:
+
+- No race conditions
+- Safe stock updates
+- Transactional consistency
 
 ---
 
-## 🌍 Deployment
+# 📡 REST API
 
-Deployed on Render with:
+## Authentication
 
-- Environment variable management
-- PostgreSQL integration
-- Production monitoring
-- Cloud-hosted backend services
-- Dockerized deployment consistency
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| POST | `/auth/register` | Register User |
+| POST | `/auth/login` | Login & Generate JWT |
 
 ---
 
-## 📘 API Documentation
+## Products
 
-Swagger UI available at:
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/products` | Get All Products |
+| GET | `/api/products/{id}` | Get Product By ID |
+| POST | `/api/admin/products` | Add Product (Admin) |
 
-```txt
+---
+
+## Orders
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| POST | `/api/orders` | Place Order |
+| GET | `/api/orders` | Get User Orders |
+
+---
+
+# 📘 Swagger Documentation
+
+After starting the application:
+
+```
 http://localhost:8080/swagger-ui/index.html
 ```
 
----
+Swagger provides:
 
-## 📡 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/signup` | Register User |
-| POST | `/api/auth/login` | Generate JWT |
-| GET | `/api/products` | Fetch Products |
-| POST | `/api/products/{id}/purchase` | Purchase Product |
-| GET | `/swagger-ui/index.html` | Swagger UI Documentation |
+- API Documentation
+- Request Examples
+- Response Models
+- Interactive API Testing
 
 ---
 
-## 🐳 Run Using Docker
+# 🐳 Docker
+
+Run the complete application:
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
+This starts:
+
+- Spring Boot
+- PostgreSQL
+- Redis
+
 ---
 
-## 🚀 Local Setup
+# 🚀 Running Locally
+
+Clone the repository:
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/<your-username>/ScaleStore.git
+```
+
+Go to project directory:
+
+```bash
 cd ScaleStore
-mvn spring-boot:run
+```
+
+Run:
+
+```bash
+./mvnw spring-boot:run
+```
+
+or on Windows:
+
+```bash
+mvnw.cmd spring-boot:run
 ```
 
 ---
 
-## 📈 Future Improvements
+# 🧪 Testing
 
-- API Rate Limiting
-- Kafka Event Streaming
-- CI/CD Pipeline Enhancements
-- Monitoring & Logging using Prometheus/Grafana
-- Unit Testing & Integration Testing
-- Microservices Architecture Migration
+Run all tests:
+
+```bash
+./mvnw test
+```
+
+Tests include:
+
+- Unit Tests
+- Service Layer Tests
+- Controller Tests (MockMvc)
 
 ---
 
-## 👨‍💻 Author
+# 🔄 Continuous Integration
 
-**Kalevaru Charan Ganesh**  
-Backend-focused Java Developer
+GitHub Actions automatically:
 
-B.Tech CSE — B. V. Raju Institute of Technology, Narsapur
+- Builds the project
+- Executes all tests
+- Verifies every push and pull request
+
+---
+
+# 📂 Project Structure
+
+```text
+ScaleStore
+│
+├── Authentication
+│     ├── JWT
+│     └── Spring Security
+│
+├── Product Module
+├── Order Module
+├── Redis Cache
+├── PostgreSQL
+├── Docker
+├── Swagger
+├── Testing
+│     ├── JUnit
+│     ├── Mockito
+│     └── MockMvc
+│
+└── GitHub Actions CI
+```
+
+---
+
+# 📈 Future Improvements
+
+- Kafka Event Streaming
+- Elasticsearch
+- Prometheus & Grafana Monitoring
+- Kubernetes Deployment
+- Distributed Tracing
+- Email Notifications
+- Payment Gateway Integration
+
+---
+
+# 👨‍💻 Author
+
+**Kalevaru Charan Ganesh**
+
+Backend Java Developer
+
+B.Tech – Computer Science & Engineering
+
+B. V. Raju Institute of Technology, Narsapur
+
+---
+
+# 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## ⭐ If you found this project useful, consider giving it a star!
